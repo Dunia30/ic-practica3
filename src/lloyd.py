@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-# region Funciones auxiliares
 
 def lecturaDeFichero():
     # Crear un diccionario vacío
@@ -24,27 +23,81 @@ def lecturaDeFichero():
 
     return [Iris_setosa, Iris_versicolor]
 
-# endregion
-
 
 # Constantes
 TOLERANCIA = 1e-10
 K_MAX = 10
 RAZON_APRENDIZAJE = 0.1
 
-# Inicializar los centros
-centrosSetosa = [4.6, 3.0, 4.0, 0.0]
-centrosVersicolor = [6.8, 3.4, 4.6, 0.7]
+# Calcular centro actualizado
+
+
+def calcularCentroActualizado(centro, muestra):
+    return centro + RAZON_APRENDIZAJE * (muestra - centro)
+
+# Encontrar centro mas cercano a un punto
+
+
+def centroMasCercano(punto, centroSetosa, centroVersicolor):
+    distanciaCuadradaSetosa = np.sum(np.square(punto - centroSetosa))
+    distanciaCuadradaVersicolor = np.sum(np.square(punto - centroVersicolor))
+
+    if distanciaCuadradaSetosa >= distanciaCuadradaVersicolor:
+        return "Setosa"
+    else:
+        return "Versicolor"
+
+
+# Criterio de finalizacion
+def criterioFinalizacion(centros, centrosActualizados):
+    for i in range(len(centros)):
+        diferencia = np.linalg.norm(centros[i] - centrosActualizados[i])
+
+        if (diferencia > TOLERANCIA):
+            return False
+
+    return True
+
 
 # Algoritmo de LLoyd
-def lloyd(datos):
+def lloyd():
     terminado = False
-    irisSetosa, irisVersicolor = datos
+    irisSetosa, irisVersicolor = lecturaDeFichero()
     k = 1
 
-    while not terminado and k <= K_MAX:
+    # Inicializar los centros (como vectores verticales)
+    centroSetosa = np.array([4.6, 3.0, 4.0, 0.0]).T
+    centroVersicolor = np.array([6.8, 3.4, 4.6, 0.7]).T
+
+    while not terminado or k > K_MAX:
+        centroSetosaActualizado = np.copy(centroSetosa)
+        centroVersicolorActualizado = np.copy(centroVersicolor)
+
+        # Calcular centro setosa actualizado
+        for muestra in irisSetosa:
+            muestraVector = np.array(muestra)
+
+            centroSetosaActualizado = calcularCentroActualizado(
+                centroSetosaActualizado, muestraVector)
+
+        # Calcular centro versicolor actualizado
+        for muestra in irisVersicolor:
+            muestraVector = np.array(muestra)
+
+            centroVersicolorActualizado = calcularCentroActualizado(
+                centroVersicolorActualizado, muestraVector)
 
         k += 1
+        terminado = criterioFinalizacion([centroSetosa, centroVersicolor], [
+                                         centroSetosaActualizado, centroVersicolorActualizado])
+
+        # Actualizar centro setosa
+        centroSetosa = np.copy(centroSetosaActualizado)
+
+        # Actualizar centro versicolor
+        centroVersicolor = np.copy(centroVersicolorActualizado)
 
 
-lloyd(lecturaDeFichero())
+# TODO: Probar ejemplos
+
+lloyd()
