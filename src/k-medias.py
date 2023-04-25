@@ -2,8 +2,6 @@ import math
 # Constantes
 E = 0.01  # Tolerancia
 b = 2  # Peso exponencial
-centrosSetosa = [4.6, 3.0, 4.0, 0.0]
-centrosVersi = [6.8, 3.4, 4.6, 0.7]
 
 
 def lecturaDeFichero():
@@ -29,10 +27,8 @@ def lecturaDeFichero():
 
 
 def k_medias():
-    global E
-    global b
-    global centrosSetosa
-    global centrosVersi
+    centrosSetosa = [4.6, 3.0, 4.0, 0.0]
+    centrosVersi = [6.8, 3.4, 4.6, 0.7]
     salir = False
     iteracion = 1
     [Iris_setosa, Iris_versicolor] = lecturaDeFichero()
@@ -128,14 +124,16 @@ def k_medias():
 
             nuevoCentroVersi.append(aux1 / aux2)
 
-        salir = criterioConver(nuevoCentroSetosa, nuevoCentroVersi)
+        salir = criterioConver(nuevoCentroSetosa, nuevoCentroVersi, centrosSetosa, centrosVersi)
 
         centrosVersi = nuevoCentroVersi
         centrosSetosa = nuevoCentroSetosa
         iteracion += 1
 
+    return [centrosSetosa, centrosVersi]
 
-def criterioConver(nuevoCentroSetosa, nuevoCentroVersi):
+
+def criterioConver(nuevoCentroSetosa, nuevoCentroVersi, centrosSetosa, centrosVersi):
     i = 0
     aux1 = 0
 
@@ -175,7 +173,7 @@ def resultadoKMedias(ejemplo):  # Devuelve la clase resultante del metodo de K-M
         return 'Iris-versicolor'
 
 
-k_medias()
+[centrosSetosa, centrosVersi] = k_medias()
 
 print(f'Nuevo centro Setosa: {centrosSetosa}')
 print(f'Nuevo centro Versicolor: {centrosVersi}')
