@@ -1,45 +1,102 @@
 import numpy as np
 
 def bayes():
-    data = np.loadtxt("../data/Iris2Clases.txt")
-    y = data[:, -1]
-    X = data[:, :-1]
-    K = 2
+    [Iris_setosa, Iris_versicolor] = lecturaDeFichero()
+    suma1=np.array([0,0,0,0])
+    suma2=np.array([0,0,0,0])
 
-    idx = np.where(y == 0)[0]
-    X1 = X[idx, :]
-    idx = np.where(y == 1)[0]
-    X2 = X[idx, :]
+    for muestra_s in Iris_setosa:
+        suma1 = np.add(suma1,muestra_s)
+        
 
-    # Calculo de m
-    m1 = np.sum(X1, axis=0) / X1.shape[0]
-    m2 = np.sum(X2, axis=0) / X2.shape[0]
+    for muestra_v in Iris_versicolor:
+        suma2 = np.add(suma2,muestra_v)
+    
+    m1=np.multiply(suma1, 1/len(Iris_setosa))
+    m2=np.multiply(suma2, 1/len(Iris_versicolor))
+  
+    # print(m1, m2)
+    c1_in=np.array([])
+    for i,muestra_s in enumerate(Iris_setosa):
+        n=np.subtract(muestra_s,m1)[np.newaxis]
+        t=np.subtract(muestra_s,m1)[np.newaxis].T
+        t_n=np.dot(t,n)
+        if i==0:
+            aux=t_n
+        else:
+            sum=np.add(aux,t_n)
+            c1_in=sum
 
-    # Calculo de C
-    C1 = np.dot((X1 - m1).T, X1 - m1) / X1.shape[0]
-    C2 = np.dot((X2 - m2).T, X2 - m2) / X2.shape[0]
+    c1=np.multiply(c1_in,1/len(Iris_setosa))
 
-    # Cargamos los 3 datos de ejemplo y comprobamos a que clase pertenece cada uno
-    data = np.zeros((3, X.shape[1] + 1))
-    data[:, :-1] = np.loadtxt("TestIris01.txt"), np.loadtxt("TestIris02.txt"), np.loadtxt("TestIris03.txt")
-    y = data[:, -1]
-    X = data[:, :-1]
+    c2_in=np.array([])
+    for i,muestra_v in enumerate(Iris_versicolor):
+        n=np.subtract(muestra_v,m2)[np.newaxis]
+        t=np.subtract(muestra_v,m2)[np.newaxis].T
+        t_n=np.dot(t,n)
+        if i==0:
+            aux=t_n
+        else:
+            sum=np.add(aux,t_n)
+            c2_in=sum
+    
+    c2=np.multiply(c2_in,1/len(Iris_versicolor))
+    
 
-    for i in range(X.shape[0]):
-        verosimilitud = np.zeros(2)
-        verosimilitud[0] = (1 / ( ((2*np.pi)**(X.shape[1]/2)) * (np.linalg.det(C1)**(1/2))))*np.exp((-1/2)* np.dot((X[i,:] - m1), np.dot(np.linalg.pinv(C1), (X[i,:] - m1).T)))
-        verosimilitud[1] = (1 / ( ((2*np.pi)**(X.shape[1]/2)) * (np.linalg.det(C2)**(1/2))))*np.exp((-1/2)* np.dot((X[i,:] - m2), np.dot(np.linalg.pinv(C2), (X[i,:] - m2).T)))
 
-        # normalizamos las verosimilitudes
-        sumaverosimilitud = np.sum(verosimilitud)
-        verosimilitud /= sumaverosimilitud
+    for i,muestra_s in enumerate(Iris_setosa):
+        n_m1=np.subtract(muestra_s,m1)[np.newaxis]
+        t_m1=np.subtract(muestra_s,m1)[np.newaxis].T
+        n_m2=np.subtract(muestra_s,m2)[np.newaxis]
+        t_m2=np.subtract(muestra_s,m2)[np.newaxis].T
+        inter_s=np.dot(n_m1,np.identity(4))
+        inter_v=np.dot(n_m2,np.identity(4))
+        dis_s=np.dot(inter_s,t_m1)
+        dis_v=np.dot(inter_v,t_m2)
+        if  np.greater(dis_s , dis_v):
+            print("Iris_versicolor")
+        else:
+            print("Iris_setosa")
 
-        if (verosimilitud[0] > verosimilitud[1] and y[i] == 0):
-            print("is: Iris-setosa ; classified as: Iris-setosa ; \t right")
-        elif (verosimilitud[0] > verosimilitud[1] and y[i] == 1):
-            print("is: Iris-versicolor ; classified as: Iris-setosa ; \t wrong")
-        elif (verosimilitud[0] <= verosimilitud[1] and y[i] == 1):
-            print("is: Iris-versicolor ; classified as: Iris-versicolor ; \t right")
-        elif (verosimilitud[0] <= verosimilitud[1] and y[i] == 0):
-            print("is: Iris-setosa ; classified as: Iris-versicolor ; \t wrong")
-bayes();
+    for i,muestra_v in enumerate(Iris_versicolor):
+        n_m1=np.subtract(muestra_v,m1)[np.newaxis]
+        t_m1=np.subtract(muestra_v,m1)[np.newaxis].T
+        n_m2=np.subtract(muestra_v,m2)[np.newaxis]
+        t_m2=np.subtract(muestra_v,m2)[np.newaxis].T
+        inter_s=np.dot(n_m1,np.identity(4))
+        inter_v=np.dot(n_m2,np.identity(4))
+        dis_s=np.dot(inter_s,t_m1)
+        dis_v=np.dot(inter_v,t_m2)
+        if np.greater(dis_s , dis_v):
+            print("Iris_versicolor")
+        else:
+            print("Iris_setosa")
+
+   
+
+
+def lecturaDeFichero():
+    # Crear un diccionario vacío
+    Iris_setosa = []
+    Iris_versicolor=[]
+    # Abrir el archivo para leer
+    with open('../data/Iris2Clases.txt', 'r') as archivo:
+        # Leer cada línea del archivo
+        for linea in archivo:
+            # Separar los elementos por coma
+            elementos = linea.strip().split(',')
+            
+            # Crear la lista de elementos numéricos
+            numeros = [float(x) for x in elementos[:-1]]
+          
+            if elementos[-1]=="Iris-setosa":
+                Iris_setosa.append(numeros)
+            else:
+                Iris_versicolor.append(numeros)
+
+        Iris_setosa=np.array(Iris_setosa)
+        Iris_versicolor=np.array(Iris_versicolor)
+    return [Iris_setosa, Iris_versicolor]
+
+bayes()
+
