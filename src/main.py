@@ -80,6 +80,32 @@ def probarCentros(titulo, centroSetosaActualizado, centroVersicolorActualizado, 
     print("    Esperado:", ejemplo3["clase"], sep="\t")
     print("  ================")
 
+    ejemplo4 = analizarEjemplo("data/TestIris04.txt")
+    claseEjemplo4 = calcularClase(
+        ejemplo4["punto"], centroSetosaActualizado, centroVersicolorActualizado)
+    print("  === Ejemplo4 ===")
+    print("    Resultado:", claseEjemplo4, sep="\t")
+    print("    Esperado:", ejemplo4["clase"], sep="\t")
+    print("  ================")
+
+    ejemplo5 = analizarEjemplo("data/TestIris05.txt")
+    claseEjemplo5 = calcularClase(
+        ejemplo5["punto"], centroSetosaActualizado, centroVersicolorActualizado)
+    print("  === Ejemplo5 ===")
+    print("    Resultado:", claseEjemplo5, sep="\t")
+    print("    Esperado:", ejemplo5["clase"], sep="\t")
+    print("  ================")
+
+    ejemplo6 = analizarEjemplo("data/TestIris06.txt")
+    claseEjemplo6 = calcularClase(
+        ejemplo6["punto"], centroSetosaActualizado, centroVersicolorActualizado)
+    print("  === Ejemplo6 ===")
+    print("    Resultado:", claseEjemplo6, sep="\t")
+    print("    Esperado:", ejemplo6["clase"], sep="\t")
+    print("  ================")
+
+
+
     print("=" * (len(titulo) + 8))
 
 
@@ -120,6 +146,30 @@ def probarBayes(titulo, covarianzaSetosa, mSetosa, covarianzaVersicolor, mVersic
     print("  === Ejemplo3 ===")
     print("    Resultado:", claseEjemplo3, sep="\t")
     print("    Esperado:", ejemplo3["clase"], sep="\t")
+    print("  ================")
+
+    ejemplo4 = analizarEjemplo("data/TestIris04.txt")
+    claseEjemplo4 = calcularClase(
+        ejemplo4["punto"], mSetosa, mVersicolor)
+    print("  === Ejemplo4 ===")
+    print("    Resultado:", claseEjemplo4, sep="\t")
+    print("    Esperado:", ejemplo4["clase"], sep="\t")
+    print("  ================")
+
+    ejemplo5 = analizarEjemplo("data/TestIris05.txt")
+    claseEjemplo5 = calcularClase(
+        ejemplo5["punto"], mSetosa, mVersicolor)
+    print("  === Ejemplo5 ===")
+    print("    Resultado:", claseEjemplo5, sep="\t")
+    print("    Esperado:", ejemplo5["clase"], sep="\t")
+    print("  ================")
+
+    ejemplo6 = analizarEjemplo("data/TestIris06.txt")
+    claseEjemplo6 = calcularClase(
+        ejemplo6["punto"], mSetosa, mVersicolor)
+    print("  === Ejemplo6 ===")
+    print("    Resultado:", claseEjemplo6, sep="\t")
+    print("    Esperado:", ejemplo6["clase"], sep="\t")
     print("  ================")
 
     print("=" * (len(titulo) + 8))
