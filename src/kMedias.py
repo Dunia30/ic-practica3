@@ -1,40 +1,16 @@
 import math
+
 # Constantes
 E = 0.01  # Tolerancia
 b = 2  # Peso exponencial
 
-
-def lecturaDeFichero():
-    # Crear un diccionario vacío
-    Iris_setosa = []
-    Iris_versicolor=[]
-    # Abrir el archivo para leer
-    with open('../data/Iris2Clases.txt', 'r') as archivo:
-        # Leer cada línea del archivo
-        for linea in archivo:
-            # Separar los elementos por coma
-            elementos = linea.strip().split(',')
-
-            # Crear la lista de elementos numéricos
-            numeros = [float(x) for x in elementos[:-1]]
-
-            if elementos[-1]=="Iris-setosa":
-                Iris_setosa.append(numeros)
-            else:
-                Iris_versicolor.append(numeros)
-
-    return [Iris_setosa, Iris_versicolor]
-
-
-def k_medias():
-    centrosSetosa = [4.6, 3.0, 4.0, 0.0]
-    centrosVersi = [6.8, 3.4, 4.6, 0.7]
+def k_medias(Iris_setosa, Iris_versicolor, centrosSetosa, centrosVersi):
+    centrosSetosa_c = centrosSetosa
+    centrosVersi_c = centrosVersi
     salir = False
     iteracion = 1
-    [Iris_setosa, Iris_versicolor] = lecturaDeFichero()
 
     while not salir:
-        print(f'Iteración número: {iteracion}')
         # Calculamos el exponente
         exponente = 1 / (b - 1)
         # Si hay el mismo numero de elementos en las 2 clases entonces basta con resolverlo
@@ -48,12 +24,12 @@ def k_medias():
 
             for j in range(len(Iris_setosa[i])):
 
-                djSetosa += math.pow(Iris_setosa[i][j] - centrosSetosa[j], 2)
-                djVersicolor += math.pow(Iris_setosa[i][j] - centrosVersi[j], 2)
+                djSetosa += math.pow(Iris_setosa[i][j] - centrosSetosa_c[j], 2)
+                djVersicolor += math.pow(Iris_setosa[i][j] - centrosVersi_c[j], 2)
 
             res.append(djSetosa)  # valor [0] del array === Setosa
             res.append(djVersicolor)  # valor [1] del array === VersiColor
-           
+
             d.append(res)
 
         # Se calculan los valores de d para irisVersicolor
@@ -63,9 +39,9 @@ def k_medias():
             djVersicolor = 0
             for j in range(len(Iris_versicolor[i])):
                 djSetosa += math.pow(Iris_versicolor
-                                     [i][j] - centrosSetosa[j], 2)
+                                     [i][j] - centrosSetosa_c[j], 2)
                 djVersicolor += math.pow(Iris_versicolor
-                                         [i][j] - centrosVersi[j], 2)
+                                         [i][j] - centrosVersi_c[j], 2)
 
             res.append(djSetosa)  # valor [0] del array === Setosa
             res.append(djVersicolor)  # valor [1] del array === VersiColor
@@ -92,7 +68,7 @@ def k_medias():
 
         nuevoCentroSetosa = []
         nuevoCentroVersi = []
-        for i in range(len(centrosSetosa)):  # Nuevo Centro para la clase Iris Setosa
+        for i in range(len(centrosSetosa_c)):  # Nuevo Centro para la clase Iris Setosa
             aux1 = 0
             aux2 = 0
             for j in range(len(Iris_setosa)):
@@ -108,7 +84,7 @@ def k_medias():
 
             nuevoCentroSetosa.append(aux1 / aux2)
 
-        for i in range(len(centrosVersi)):  # Nuevo centro para la lase Iris Versicolor
+        for i in range(len(centrosVersi_c)):  # Nuevo centro para la lase Iris Versicolor
             aux1 = 0
             aux2 = 0
             for j in range(len(Iris_setosa)):
@@ -124,13 +100,13 @@ def k_medias():
 
             nuevoCentroVersi.append(aux1 / aux2)
 
-        salir = criterioConver(nuevoCentroSetosa, nuevoCentroVersi, centrosSetosa, centrosVersi)
+        salir = criterioConver(nuevoCentroSetosa, nuevoCentroVersi, centrosSetosa_c, centrosVersi_c)
 
-        centrosVersi = nuevoCentroVersi
-        centrosSetosa = nuevoCentroSetosa
+        centrosVersi_c = nuevoCentroVersi
+        centrosSetosa_c = nuevoCentroSetosa
         iteracion += 1
 
-    return [centrosSetosa, centrosVersi]
+    return [centrosSetosa_c, centrosVersi_c]
 
 
 def criterioConver(nuevoCentroSetosa, nuevoCentroVersi, centrosSetosa, centrosVersi):
@@ -157,23 +133,17 @@ def criterioConver(nuevoCentroSetosa, nuevoCentroVersi, centrosSetosa, centrosVe
     return True  # Se acabo iterars
 
 
-def resultadoKMedias(ejemplo):  # Devuelve la clase resultante del metodo de K-Medias
+def resultadoKMedias(ejemplo, centrosSetosa, centrosVersicolor):  # Devuelve la clase resultante del metodo de K-Medias
     resultSetosa = 0
     resultVersiColor = 0
 
     for i in range(len(centrosSetosa)):
         resultSetosa += math.pow(ejemplo[i] - centrosSetosa[i], 2)
 
-    for i in range(len(centrosSetosa)):
-        resultVersiColor += math.pow(ejemplo[i] - centrosVersi[i], 2)
+    for i in range(len(centrosVersicolor)):
+        resultVersiColor += math.pow(ejemplo[i] - centrosVersicolor[i], 2)
 
-    if (resultSetosa < resultVersiColor):
+    if (resultSetosa <= resultVersiColor):
         return 'Iris-setosa'
     else:
         return 'Iris-versicolor'
-
-
-[centrosSetosa, centrosVersi] = k_medias()
-
-print(f'Nuevo centro Setosa: {centrosSetosa}')
-print(f'Nuevo centro Versicolor: {centrosVersi}')
